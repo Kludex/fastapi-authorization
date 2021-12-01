@@ -1,0 +1,8 @@
+flake8==4.0.1
+isort==5.10.1
+black==21.11b1
+uvicorn==0.15.0
+pytest==6.2.5
+requests==2.26.0
+rich==10.15.1
+coverage==6.2.0
