@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI
 from pydantic import BaseModel
 
-from fastapi_authorization.rbac import RBACSystem
+from fastapi_authorization.rbac import RBAC
 
 
 class Token(BaseModel):
@@ -16,7 +16,7 @@ def role_callback(token: Token = Depends(get_token)) -> str:
     return token.role
 
 
-auth = RBACSystem(role_callback)
+auth = RBAC(role_callback)
 auth.add_permission("admin", "read:user")
 
 app = FastAPI()

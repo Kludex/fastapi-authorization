@@ -7,7 +7,7 @@ from fastapi import Depends, params
 from fastapi.exceptions import HTTPException
 
 
-class RBACSystem:
+class RBAC:
     def __init__(self, role_callback: str, roles: List[Role] | None = None):
         self.role_callback = role_callback
         self.roles = roles or []
