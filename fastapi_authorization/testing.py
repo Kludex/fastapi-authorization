@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import Sequence
+from typing import Sequence, Union
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -11,7 +11,7 @@ from fastapi_authorization.rbac import RBAC
 
 
 def auto_test_protected_endpoints(
-    app: FastAPI, auth: RBAC | ABAC, exclude: Sequence[str] = ()
+    app: FastAPI, auth: Union[RBAC, ABAC], exclude: Sequence[str] = ()
 ) -> None:
     module_name = f"fastapi_authorization.{auth.__class__.__name__.lower()}"
 

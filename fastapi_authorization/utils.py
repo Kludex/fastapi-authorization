@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Union, List
+
 
 T = TypeVar("T")
 
-
-def normalize_list(items: list[str | T], type_: Type[T]) -> list[T]:
+def normalize_list(items: List[Union[str, T]], type_: Type[T]) -> List[T]:
     """Normalize a list of items to a list of the specified type.
 
     This solution assumes that T is instantiable with a single string argument.

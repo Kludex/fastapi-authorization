@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from inspect import getfile, signature
+from typing import List, Union
 
-from fastapi import Depends, params
-from fastapi.exceptions import HTTPException
+from fastapi import Depends, params, HTTPException
 
 from fastapi_authorization.utils import normalize_list
 
@@ -14,7 +14,7 @@ except ModuleNotFoundError:  # pragma: no cover
 
 
 class RBAC:
-    def __init__(self, role_callback: str, roles: list[Role | str] | None = None):
+    def __init__(self, role_callback: str, roles: Union[List[Union[Role, str]], None] = None):
         self.role_callback = role_callback
         self.roles = normalize_list(roles, Role) if roles else []
 
@@ -22,15 +22,16 @@ class RBAC:
         self,
         name: str,
         *,
-        description: str | None = None,
-        permissions: list[Scope | str] | None = None,
+        description: Union[str, None] = None,
+        permissions: Union[List[Union[Scope, str]], None] = None,
     ) -> None:
         role = Role(name, description, permissions)
         self.roles.append(role)
 
-    def add_permissions(self, role: str, permissions: list[Scope | str]) -> None:
+    def add_permissions(self, role: str, permissions: List[Union[Scope, str]]) -> None:
         if role not in self.roles:
             raise RuntimeError(f"Role {role} does not exist")
+
         index = self.roles.index(role)
         self.roles[index].add_permissions(permissions)
 
@@ -38,17 +39,16 @@ class RBAC:
         def allow(role: str) -> bool:
             if role not in self.roles:
                 raise HTTPException(status_code=403, detail="Forbidden")
+
             scopes = self.roles[self.roles.index(role)].permissions
+
             if scope not in scopes:
                 raise HTTPException(status_code=403, detail="Forbidden")
 
         sig = signature(allow)
-        sig = sig.replace(
-            parameters=[
-                sig.parameters["role"].replace(default=Depends(self.role_callback))
-            ]
-        )
+        sig = sig.replace(parameters=[sig.parameters["role"].replace(default=Depends(self.role_callback))])
         allow.__signature__ = sig
+
         return params.Depends(dependency=allow, use_cache=True)
 
     def __repr__(self) -> str:
@@ -74,7 +74,7 @@ class Role:
         self.description = description
         self.permissions = normalize_list(scopes, Scope) if scopes else []
 
-    def add_permissions(self, scopes: list[Scope | str]) -> None:
+    def add_permissions(self, scopes: List[Union[Scope, str]]) -> None:
         scopes = normalize_list(scopes, Scope)
         self.permissions.extend(scopes)
 
@@ -97,7 +97,7 @@ class Role:
 
 
 class Scope:
-    def __init__(self, name: str, description: str | None = None):
+    def __init__(self, name: str, description: Union[str, None] = None):
         self.name = name
         self.description = description
 
@@ -106,6 +106,7 @@ class Scope:
             return __o == self.name
         elif isinstance(__o, type(self)):
             return __o.name == self.name
+
         return False
 
     def __hash__(self) -> int:
