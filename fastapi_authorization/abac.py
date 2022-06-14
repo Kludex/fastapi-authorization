@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from inspect import Parameter, Signature
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Sequence, Union, List, Any
 
 from fastapi import Depends, params
 
@@ -12,7 +12,7 @@ except ModuleNotFoundError:
 
 
 class ABAC:
-    def __init__(self, policies: list[Policy] | None = None) -> None:
+    def __init__(self, policies: Union[List[Policy], None] = None) -> None:
         self.policies = policies or []
 
     def add_policy(
@@ -22,6 +22,7 @@ class ABAC:
 
     def Permission(self, resource: str, action: str) -> params.Depends:
         current_policy = None
+        
         for policy in self.policies:
             if (resource, action) == policy:
                 current_policy = policy
